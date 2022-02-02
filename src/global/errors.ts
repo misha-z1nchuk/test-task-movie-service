@@ -20,3 +20,9 @@ export const MOVIE_EXISTS = {
     "code": "MOVIE_EXISTS"
 }
 
+export const TOKEN_NOT_VALID = {
+    "fields": {
+        "token": "REQUIRED"
+    },
+    "code": "FORMAT_ERROR"
+}
