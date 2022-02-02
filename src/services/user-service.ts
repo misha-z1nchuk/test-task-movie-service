@@ -10,7 +10,15 @@ export class UserService{
     async create(name: string, email: string, password: string, confirmPassword: string){
         const candidate = await Users.findOne({where: {email}});
         if(candidate){
-            throw ApiError.BadRequest(`User with such email is already exists`);
+            throw ApiError.BadRequest(`User with such email is already exists`,
+                [
+                    {
+                        "fields": {
+                            "email": "NOT_UNIQUE"
+                        },
+                        "code": "EMAIL_NOT_UNIQUE"
+                    }
+            ]);
 
         }
         if (password !== confirmPassword){
