@@ -1,6 +1,6 @@
-import { Model } from "sequelize";
+import {Users} from "../model";
 
-export interface UserI extends Model{
+export interface UserI extends Users{
     id?: number | undefined,
     name: string,
     email: string,

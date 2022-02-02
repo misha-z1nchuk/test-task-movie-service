@@ -1,17 +1,17 @@
 import {DataTypes, Model} from 'sequelize';
 import db from '../config/database.config'
 
-export interface UsersAttributes{
-    id: number | undefined,
-    name: string,
-    email: string
-    password: string;
-}
+// export interface UsersAttributes{
+//     id: number | undefined,
+//     name: string,
+//     email: string
+//     password: string;
+// }
 
-export class Users extends Model<UsersAttributes>{
+export class Users extends Model{}
 
 
-}
+
 
 Users.init(
     {
