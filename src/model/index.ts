@@ -2,7 +2,7 @@ import {DataTypes, Model} from 'sequelize';
 import db from '../config/database.config'
 
 interface UsersAttributes{
-    id: string,
+    id: number | undefined,
     name: string,
     email: string
     password: string;
@@ -16,9 +16,9 @@ export class Users extends Model<UsersAttributes>{
 Users.init(
     {
         id: {
-            type: DataTypes.STRING,
+            type: DataTypes.INTEGER,
             primaryKey: true,
-            allowNull: false,
+            autoIncrement: true
         },
         name: {
             type: DataTypes.STRING,
@@ -27,7 +27,6 @@ Users.init(
         email: {
             type: DataTypes.STRING,
             allowNull: false,
-            unique: true
         },
         password: {
             type: DataTypes.STRING,
@@ -36,6 +35,7 @@ Users.init(
     },
     {
         sequelize: db,
-        tableName: 'users'
+        tableName: 'users',
+        timestamps: false
     }
 )
