@@ -1,7 +1,7 @@
 import {DataTypes, Model} from 'sequelize';
 import db from '../config/database.config'
 
-interface UsersAttributes{
+export interface UsersAttributes{
     id: number | undefined,
     name: string,
     email: string
