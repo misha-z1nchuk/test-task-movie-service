@@ -1,4 +1,4 @@
-import {Users} from "../model";
+import {Users} from "../model/users-model";
 import {AUTHENTICATION_FAILED} from "../global/errors";
 const  ApiError = require("../exeptions/api-error");
 const bcrypt = require('bcrypt')

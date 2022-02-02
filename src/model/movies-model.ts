@@ -1,42 +1,32 @@
 import {DataTypes, Model} from 'sequelize';
 import db from '../config/database.config'
 
-// export interface UsersAttributes{
-//     id: number | undefined,
-//     name: string,
-//     email: string
-//     password: string;
-// }
 
-export class Users extends Model{}
+export class Movies extends Model{}
 
 
-
-
-Users.init(
+Movies.init(
     {
         id: {
             type: DataTypes.INTEGER,
             primaryKey: true,
             autoIncrement: true
         },
-        name: {
+        title: {
             type: DataTypes.STRING,
             allowNull: false,
         },
-        email: {
-            type: DataTypes.STRING,
+        year: {
+            type: DataTypes.NUMBER,
             allowNull: false,
-            unique: true
         },
-        password: {
+        format: {
             type: DataTypes.STRING,
             allowNull: false,
         },
     },
     {
         sequelize: db,
-        tableName: 'users',
-        timestamps: false
+        tableName: 'movies',
     }
 )

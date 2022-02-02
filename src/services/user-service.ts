@@ -3,7 +3,7 @@ import {UserI} from "../global/types";
 const ApiError = require('../exeptions/api-error')
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
-import {Users} from "../model";
+import {Users} from "../model/users-model";
 import {EMAIL_NOT_UNIQUE} from "../global/errors";
 const UserDto = require('../dtos/user-dto')
 

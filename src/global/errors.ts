@@ -13,3 +13,10 @@ export const EMAIL_NOT_UNIQUE = {
     "code": "EMAIL_NOT_UNIQUE"
 }
 
+export const MOVIE_EXISTS = {
+    "fields": {
+        "title": "NOT_UNIQUE"
+    },
+    "code": "MOVIE_EXISTS"
+}
+

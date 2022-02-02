@@ -1,4 +1,4 @@
-import {Users} from "../model";
+import {Users} from "../model/users-model";
 
 export interface UserI extends Users{
     id?: number | undefined,
