@@ -203,22 +203,20 @@ export class SessionService {
         }
 
         const dataToOutput: Movies[] = []
-        movieList.map(async (movieItem: Movies) => {
+        await Promise.all(movieList.map( async (movieItem: Movies) => {
             const isMovieExist: Movies | null = await Movies.findOne({where: {title: movieItem.title}});
-            if (isMovieExist) {
-                return null;
+            if (!isMovieExist) {
+                const movie: Movies = await Movies.create({
+                    title: movieItem.title,
+                    year: movieItem.year,
+                    format: movieItem.format
+                });
+                dataToOutput.push(movie);
+                movieItem.actors.split(',').map(async (actor: string) => {
+                    await Actors.create({name: actor.trim(), movieId: movie.id});
+                })
             }
-            const movie: Movies = await Movies.create({
-                title: movieItem.title,
-                year: movieItem.year,
-                format: movieItem.format
-            });
-            dataToOutput.push(movie);
-
-            movieItem.actors.split(',').map(async (actor: string) => {
-                await Actors.create({name: actor.trim(), movieId: movie.id});
-            })
-        })
+        }))
         const amount = await Movies.findAndCountAll();
 
         return {

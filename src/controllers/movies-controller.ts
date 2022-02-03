@@ -61,7 +61,7 @@ export class SessionsController{
         try{
             const {file} = req.files
             let buffer = file.data;
-            let result =await moviesService.import(buffer.toString('utf8'));
+            let result = await moviesService.import(buffer.toString('utf8'));
             res.json(result);
         }catch (e){
             next(e)
