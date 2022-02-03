@@ -16,16 +16,27 @@ To run this project, you will need to add the following environment variables to
 
 
 ## Docker
-   
+### To make docker image  locally, you can download this repo and use next commands
 ```bash
  docker build . -t <your_account_name>/movies
 ```
 
-
 ```bash
- docker run -p 8000:8050 -e APP_PORT=8050 <your_account_name>/movies
+ docker run -p 8000:8050 -e APP_PORT=8050 <your_account_name>/node-web-app  
 ```
 
+### Or you can download docker image from docker hub:
+https://hub.docker.com/repository/docker/mishazenya/movies
+ 
+  Use next commands:
+
+  ```bash
+    docker pull mishazenya/movies
+ ```
+
+  ```bash
+    docker run --name movies -p 8000:8050 -e APP_PORT=8050 mishazenya/movies
+ ```
 ## Run Locally
 
 Clone the project
