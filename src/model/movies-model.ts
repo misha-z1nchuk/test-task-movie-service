@@ -3,7 +3,13 @@ import db from '../config/database.config'
 import {Actors} from "./actors-model";
 
 
-export class Movies extends Model{}
+export class Movies extends Model{
+    public id!: number;
+    public title!: string;
+    public year!: number;
+    public format!: string;
+    public actors!: string;
+}
 
 
 Movies.init(

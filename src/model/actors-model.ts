@@ -1,9 +1,12 @@
 import {DataTypes, Model} from 'sequelize';
 import db from '../config/database.config'
-import {Movies} from "./movies-model";
 
 
-export class Actors extends Model{}
+export class Actors extends Model{
+    public id!: number;
+    public name!: string;
+    public movieId!: number;
+}
 
 
 Actors.init(
@@ -17,13 +20,6 @@ Actors.init(
             type: DataTypes.STRING,
             allowNull: false,
         },
-        // movieId:{
-        //     type: DataTypes.INTEGER,
-        //     references: {
-        //         model: 'users',
-        //         key: 'id'
-        //     }
-        // },
     },
     {
         sequelize: db,

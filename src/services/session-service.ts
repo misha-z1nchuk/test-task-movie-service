@@ -7,7 +7,7 @@ const jwt = require('jsonwebtoken')
 
 export class SessionService{
     async login(email: string, password: string){
-        const candidate : any  = await Users.findOne({where: {email}});
+        const candidate : Users | null = await Users.findOne({where: {email}});
         if(!candidate){
             throw ApiError.BadRequest(`User with such email is already exists`, {});
         }

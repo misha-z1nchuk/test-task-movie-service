@@ -4,9 +4,9 @@ import {Op} from "sequelize";
 const  ApiError = require("../exeptions/api-error");
 const MovieDto = require('../dtos/movie-dto')
 
-function getMovieIdsFromActors(array: Array<{}>){
-    let idArr: any = new Set<number>();
-    array.map((actor: any) => {
+function getMovieIdsFromActors(array: Array<Actors>){
+    let idArr: Set<number> = new Set<number>();
+    array.map((actor: Actors) => {
         idArr.add(actor.movieId)
     })
     return [...idArr]
@@ -14,13 +14,13 @@ function getMovieIdsFromActors(array: Array<{}>){
 
 export class SessionService{
     async create(title : string, year: number, format: string, actors: Array<string>){
-        const isMovieExist : any  = await Movies.findOne({where: {title}});
+        const isMovieExist : Movies | null = await Movies.findOne({where: {title}});
         if(isMovieExist){
             throw ApiError.BadRequest("MOVIE_EXISTS", {"title": "NOT_UNIQUE"});
 
         }
 
-        const movie: any = await Movies.create({title, year, format});
+        const movie: Movies = await Movies.create({title, year, format});
         actors.map(async actor => {
             await Actors.create({name: actor, movieId: movie.id});
         })
@@ -35,7 +35,7 @@ export class SessionService{
     }
 
     async delete(id: number) {
-        const isMovieExist : any  = await Movies.findByPk(id);
+        const isMovieExist: Movies | null = await Movies.findByPk(id);
         if(!isMovieExist){
             throw ApiError.BadRequest("MOVIE_NOT_FOUND", {"id": id});
         }
@@ -47,7 +47,7 @@ export class SessionService{
     }
 
     async update(id: number, title: string, year: number, format: string, actors: Array<string>) {
-        const isMovieExist : any  = await Movies.findByPk(id);
+        const isMovieExist : Movies | null  = await Movies.findByPk(id);
         if(!isMovieExist){
             throw ApiError.BadRequest(`MOVIE_NOT_FOUND`, {"id": id});
         }
@@ -66,7 +66,7 @@ export class SessionService{
     }
 
     async getMovie(id: number) {
-        const isMovieExist : any  = await Movies.findByPk(id);
+        const isMovieExist : Movies | null  = await Movies.findByPk(id);
         if(!isMovieExist){
             throw ApiError.BadRequest(`MOVIE_NOT_FOUND`, {"id": id});
         }
@@ -83,15 +83,15 @@ export class SessionService{
     }
 
     async getMovieList(actor: string, title: string, search: string, sort: string, order: string, limit: number, offset: number) {
-        offset = offset || 0
-        limit = limit || 10
+        offset = offset || 0;
+        limit = limit || 10;
         order = order || "ASC"
         sort = sort || "id";
-        offset = offset * limit - limit
-        let movies
+        offset = offset * limit - limit;
+        let movies: {rows: Movies[]; count: number} | Movies[];
+
         if (actor){
-            console.log("11111")
-            let result: Array<{}> = await Actors.findAll({
+            let result: Array<Actors> = await Actors.findAll({
                 where: {
                     name: {
                         [Op.like] : `%${actor}%`
@@ -125,7 +125,7 @@ export class SessionService{
                     offset
                 })
         }else if(search){
-            movies = await Movies.findAndCountAll(
+            let moviesSearch = await Movies.findAndCountAll(
                 {
                     attributes: {exclude: ['actors']},
                     where: {
@@ -134,7 +134,7 @@ export class SessionService{
                         },
                     },
                 })
-            let actors = await Movies.findAndCountAll(
+            let actorsSearch : {rows: Movies[]; count: number}= await Movies.findAndCountAll(
                 {
                     attributes: {exclude: ['actors']},
                     include: {model: Actors,
@@ -144,18 +144,18 @@ export class SessionService{
                         },
                     },}
                 })
-            let foundedIds: any = new Set<number>();
-            movies.rows.map((movie: any) => {
-                foundedIds.add(movie.id)
+            let foundedIdOfMovies: Set<number> = new Set<number>();
+            moviesSearch.rows.map((movie: Movies) => {
+                foundedIdOfMovies.add(movie.id)
             })
-            actors.rows.map((movie: any) => {
-                foundedIds.add(movie.id)
+            actorsSearch.rows.map((movie: Movies) => {
+                foundedIdOfMovies.add(movie.id)
             })
-            foundedIds = [...foundedIds];
+            let resultIds = [...foundedIdOfMovies];
 
-            movies  = await Movies.findAndCountAll({
+            movies = await Movies.findAndCountAll({
                 attributes: {exclude: ['actors']},
-                where: {id: {[Op.or]: foundedIds}},
+                where: {id: {[Op.or]: resultIds}},
                 order: [
                     [`${sort}`, `${order}`],
                 ],
@@ -183,8 +183,8 @@ export class SessionService{
 
     async import(file: any) {
         let currentData = file.toString().split(/(?:\r\n|\r|\n)/g);
-        let movieList: any = [];
-        let values: any = [];
+        let movieList: Movies[] = [];
+        let values: string[] = [];
 
         for(let i = 0; i< currentData.length; i++){
             if(currentData[i] == '' || currentData[i] == '\n' ){
@@ -194,18 +194,17 @@ export class SessionService{
                     break;
                 }
                 continue;
-
             }
             let line= currentData[i].split(':');
             values.push(line[1].trim());
         }
 
-        const dataToOutput : any = []
-        await movieList.map(async (movieItem: any)  => {
-            const movie: any = await Movies.create({title: movieItem.title, year: movieItem.year, format: movieItem.format});
+        const dataToOutput : Movies[] = []
+        movieList.map(async (movieItem: Movies)  => {
+            const movie: Movies = await Movies.create({title: movieItem.title, year: movieItem.year, format: movieItem.format});
             dataToOutput.push(movie);
 
-            movieItem.actors.split(',').map(async(actor: any) => {
+            movieItem.actors.split(',').map(async(actor: string) => {
                 await Actors.create({name: actor.trim(), movieId: movie.id});
             })
         })
