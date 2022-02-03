@@ -1,10 +1,11 @@
 import {Movies} from "../model/movies-model";
 import {Actors} from "../model/actors-model";
 import {Op} from "sequelize";
-const  ApiError = require("../exeptions/api-error");
+
+const ApiError = require("../exeptions/api-error");
 const MovieDto = require('../dtos/movie-dto')
 
-function getMovieIdsFromActors(array: Array<Actors>){
+function getMovieIdsFromActors(array: Array<Actors>) {
     let idArr: Set<number> = new Set<number>();
     array.map((actor: Actors) => {
         idArr.add(actor.movieId)
@@ -12,10 +13,10 @@ function getMovieIdsFromActors(array: Array<Actors>){
     return [...idArr]
 }
 
-export class SessionService{
-    async create(title : string, year: number, format: string, actors: Array<string>){
-        const isMovieExist : Movies | null = await Movies.findOne({where: {title}});
-        if(isMovieExist){
+export class SessionService {
+    async create(title: string, year: number, format: string, actors: Array<string>) {
+        const isMovieExist: Movies | null = await Movies.findOne({where: {title}});
+        if (isMovieExist) {
             throw ApiError.BadRequest("MOVIE_EXISTS", {"title": "NOT_UNIQUE"});
 
         }
@@ -29,14 +30,14 @@ export class SessionService{
         movie.set("actors", actorsOfFilm);
 
         return {
-            movie,
+            data: movie,
             status: 1
         };
     }
 
     async delete(id: number) {
         const isMovieExist: Movies | null = await Movies.findByPk(id);
-        if(!isMovieExist){
+        if (!isMovieExist) {
             throw ApiError.BadRequest("MOVIE_NOT_FOUND", {"id": id});
         }
 
@@ -47,8 +48,8 @@ export class SessionService{
     }
 
     async update(id: number, title: string, year: number, format: string, actors: Array<string>) {
-        const isMovieExist : Movies | null  = await Movies.findByPk(id);
-        if(!isMovieExist){
+        const isMovieExist: Movies | null = await Movies.findByPk(id);
+        if (!isMovieExist) {
             throw ApiError.BadRequest(`MOVIE_NOT_FOUND`, {"id": id});
         }
         await Movies.update(
@@ -60,14 +61,13 @@ export class SessionService{
             await Actors.create({name: actor, movieId: id});
         })
 
-        return {
-            status: 1
-        }
+        return this.getMovie(id);
     }
 
+
     async getMovie(id: number) {
-        const isMovieExist : Movies | null  = await Movies.findByPk(id);
-        if(!isMovieExist){
+        const isMovieExist: Movies | null = await Movies.findByPk(id);
+        if (!isMovieExist) {
             throw ApiError.BadRequest(`MOVIE_NOT_FOUND`, {"id": id});
         }
         let movie = isMovieExist;
@@ -88,20 +88,21 @@ export class SessionService{
         order = order || "ASC"
         sort = sort || "id";
         offset = offset * limit - limit;
-        let movies: {rows: Movies[]; count: number} | Movies[];
+        let movies: { rows: Movies[]; count: number } | Movies[];
 
-        if (actor){
+        if (actor) {
             let result: Array<Actors> = await Actors.findAll({
                 where: {
                     name: {
-                        [Op.like] : `%${actor}%`
-                    }}
+                        [Op.like]: `%${actor}%`
+                    }
+                }
             })
             let idArr = getMovieIdsFromActors(result)
 
             movies = await Movies.findAll({
                 attributes: {exclude: ['actors']},
-                where: {id : {[Op.or] : idArr}},
+                where: {id: {[Op.or]: idArr}},
                 order: [
                     [`${sort}`, `${order}`],
                 ],
@@ -109,7 +110,7 @@ export class SessionService{
                 offset
             })
 
-        }else if(title){
+        } else if (title) {
             movies = await Movies.findAndCountAll(
                 {
                     attributes: {exclude: ['actors']},
@@ -124,7 +125,7 @@ export class SessionService{
                     limit,
                     offset
                 })
-        }else if(search){
+        } else if (search) {
             let moviesSearch = await Movies.findAndCountAll(
                 {
                     attributes: {exclude: ['actors']},
@@ -134,15 +135,17 @@ export class SessionService{
                         },
                     },
                 })
-            let actorsSearch : {rows: Movies[]; count: number}= await Movies.findAndCountAll(
+            let actorsSearch: { rows: Movies[]; count: number } = await Movies.findAndCountAll(
                 {
                     attributes: {exclude: ['actors']},
-                    include: {model: Actors,
-                    where: {
-                        name: {
-                            [Op.like]: `%${search}%`
+                    include: {
+                        model: Actors,
+                        where: {
+                            name: {
+                                [Op.like]: `%${search}%`
+                            },
                         },
-                    },}
+                    }
                 })
             let foundedIdOfMovies: Set<number> = new Set<number>();
             moviesSearch.rows.map((movie: Movies) => {
@@ -162,8 +165,8 @@ export class SessionService{
                 limit,
                 offset
             });
-        }else {
-            movies  = await Movies.findAndCountAll({
+        } else {
+            movies = await Movies.findAndCountAll({
                 attributes: {exclude: ['actors']},
                 order: [
                     [`${sort}`, `${order}`],
@@ -186,25 +189,29 @@ export class SessionService{
         let movieList: Movies[] = [];
         let values: string[] = [];
 
-        for(let i = 0; i< currentData.length; i++){
-            if(currentData[i] == '' || currentData[i] == '\n' ){
+        for (let i = 0; i < currentData.length; i++) {
+            if (currentData[i] == '' || currentData[i] == '\n') {
                 movieList.push(new MovieDto(...values));
                 values.length = 0;
-                if (currentData[i+1] == '' || currentData[i] == '\n'){
+                if (currentData[i + 1] == '' || currentData[i] == '\n') {
                     break;
                 }
                 continue;
             }
-            let line= currentData[i].split(':');
+            let line = currentData[i].split(':');
             values.push(line[1].trim());
         }
 
-        const dataToOutput : Movies[] = []
-        movieList.map(async (movieItem: Movies)  => {
-            const movie: Movies = await Movies.create({title: movieItem.title, year: movieItem.year, format: movieItem.format});
+        const dataToOutput: Movies[] = []
+        movieList.map(async (movieItem: Movies) => {
+            const movie: Movies = await Movies.create({
+                title: movieItem.title,
+                year: movieItem.year,
+                format: movieItem.format
+            });
             dataToOutput.push(movie);
 
-            movieItem.actors.split(',').map(async(actor: string) => {
+            movieItem.actors.split(',').map(async (actor: string) => {
                 await Actors.create({name: actor.trim(), movieId: movie.id});
             })
         })
@@ -220,4 +227,5 @@ export class SessionService{
         }
     }
 }
+
 module.exports = new SessionService();
