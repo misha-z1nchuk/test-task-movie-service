@@ -204,6 +204,10 @@ export class SessionService {
 
         const dataToOutput: Movies[] = []
         movieList.map(async (movieItem: Movies) => {
+            const isMovieExist: Movies | null = await Movies.findOne({where: {title: movieItem.title}});
+            if (isMovieExist) {
+                return null;
+            }
             const movie: Movies = await Movies.create({
                 title: movieItem.title,
                 year: movieItem.year,
