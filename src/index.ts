@@ -9,7 +9,7 @@ db.sync().then(() => {
     console.log("db connected")
 })
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.APP_PORT || 5000;
 
 const app = express()
 app.use(express.json())
@@ -17,6 +17,6 @@ app.use(fileUpload({}))
 app.use('/api/v1', router)
 app.use(errorMiddleware)
 
-app.listen(5000, () => {
+app.listen(PORT, () => {
     console.log(`Server is running on ${PORT}`)
 })

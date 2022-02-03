@@ -3,9 +3,9 @@ import db from '../config/database.config'
 
 
 export class Actors extends Model{
-    public id!: number;
-    public name!: string;
-    public movieId!: number;
+    declare id: number;
+    declare name: string;
+    declare movieId: number;
 }
 
 

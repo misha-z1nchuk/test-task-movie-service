@@ -1,13 +1,13 @@
 import {DataTypes, Model} from 'sequelize';
 import db from '../config/database.config'
 
+export interface UserAttr{}
 
-export class Users extends Model{
-    public id!: number;
-    public name!: string;
-    public email!: string;
-    public password!: string;
-
+export class Users extends Model<UserAttr>{
+    declare id: number;
+    declare name: string;
+    declare email: string;
+    declare password: string;
 }
 
 

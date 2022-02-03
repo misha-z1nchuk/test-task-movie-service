@@ -4,11 +4,11 @@ import {Actors} from "./actors-model";
 
 
 export class Movies extends Model{
-    public id!: number;
-    public title!: string;
-    public year!: number;
-    public format!: string;
-    public actors!: string;
+    declare id: number;
+    declare title: string;
+    declare year: number;
+    declare format: string;
+    declare actors: string;
 }
 
 
