@@ -23,7 +23,7 @@ To run this project, you will need to add the following environment variables to
 
 
 ```bash
- docker run -p 8000:8050 -e APP_PORT=8050 <your_account_name>/node-web-app  
+ docker run -p 8000:8050 -e APP_PORT=8050 <your_account_name>/movies
 ```
 
 ## Run Locally
