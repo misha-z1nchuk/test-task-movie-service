@@ -13,7 +13,6 @@ export class SessionService{
 
         const movie: any = await Movies.create({title, year, format});
         actors.map(async actor => {
-            console.log(movie.id);
             await Actors.create({name: actor, movieId: movie.id});
         })
 
@@ -36,6 +35,27 @@ export class SessionService{
         await isMovieExist.destroy();
 
         return {status: 1};
+    }
+
+    async update(id: number, title: string, year: number, format: string, actors: Array<string>) {
+        const isMovieExist : any  = await Movies.findByPk(id);
+        if(!isMovieExist){
+            throw ApiError.BadRequest(`Movie does not  exists`, [MOVIE_NOT_EXIST]);
+        }
+
+        const res = await Movies.update(
+            {title, year, format},
+            {where: {id: id}}
+        )
+
+        await Actors.destroy({where: {movieId: id}});
+        actors.map(async actor => {
+            await Actors.create({name: actor, movieId: id});
+        })
+
+        return {
+            status: 1
+        }
     }
 }
 module.exports = new SessionService();

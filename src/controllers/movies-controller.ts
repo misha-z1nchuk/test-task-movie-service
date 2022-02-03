@@ -21,6 +21,17 @@ export class SessionsController{
             next(e)
         }
     }
+
+    async update(req: Request, res: Response, next: NextFunction): Promise<Response | void>{
+        try{
+            const {id} = req.params;
+            const {title, year, format, actors} = req.body;
+            let result =await moviesService.update(Number(id), title, year, format, actors);
+            return res.json(result);
+        }catch (e){
+            next(e)
+        }
+    }
 }
 
 module.exports = new SessionsController();
