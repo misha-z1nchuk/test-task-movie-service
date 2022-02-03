@@ -26,3 +26,10 @@ export const TOKEN_NOT_VALID = {
     },
     "code": "FORMAT_ERROR"
 }
+
+export const MOVIE_NOT_EXIST = {
+    "fields": {
+        "id": 4
+    },
+    "code": "MOVIE_NOT_FOUND"
+}
