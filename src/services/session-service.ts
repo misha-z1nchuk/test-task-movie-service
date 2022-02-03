@@ -1,5 +1,4 @@
 import {Users} from "../model/users-model";
-import {AUTHENTICATION_FAILED} from "../global/errors";
 const  ApiError = require("../exeptions/api-error");
 const bcrypt = require('bcrypt')
 const UserDto = require('../dtos/user-dto')
@@ -10,7 +9,7 @@ export class SessionService{
     async login(email: string, password: string){
         const candidate : any  = await Users.findOne({where: {email}});
         if(!candidate){
-            throw ApiError.BadRequest(`User with such email is already exists`, [AUTHENTICATION_FAILED]);
+            throw ApiError.BadRequest(`User with such email is already exists`, {});
         }
         const issPassEquals = await bcrypt.compare(password, candidate.password)
         if (!issPassEquals){

@@ -4,14 +4,13 @@ const ApiError = require('../exeptions/api-error')
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
 import {Users} from "../model/users-model";
-import {EMAIL_NOT_UNIQUE} from "../global/errors";
 const UserDto = require('../dtos/user-dto')
 
 export class UserService{
     async create(name: string, email: string, password: string, confirmPassword: string){
         const candidate = await Users.findOne({where: {email}});
         if(candidate){
-            throw ApiError.BadRequest(`User with such email is already exists`, [EMAIL_NOT_UNIQUE]);
+            throw ApiError.BadRequest("EMAIL_NOT_UNIQUE", {"email": "NOT_UNIQUE"});
         }
         if (password !== confirmPassword){
             throw ApiError.BadRequest(`passwords does not match`);

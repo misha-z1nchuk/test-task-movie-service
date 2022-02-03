@@ -1,7 +1,5 @@
 import {NextFunction} from "express";
-import {TOKEN_NOT_VALID} from "../global/errors";
 import {Users} from "../model/users-model";
-const UserDto = require('../dtos/user-dto')
 const ApiError = require('../exeptions/api-error');
 const jwt = require('jsonwebtoken');
 declare namespace Express {
@@ -13,27 +11,26 @@ module.exports = async function (req :any, res: Response, next: NextFunction){
     try {
         const authorizationHeader = req.headers.authorization;
         if (!authorizationHeader){
-            return next(ApiError.UnauthorizedError([TOKEN_NOT_VALID]));
+            return next(ApiError.BadRequest("FORMAT_ERROR", {"token": "REQUIRED"}));
         }
 
         const accessToken = authorizationHeader.split(' ')[1];
         if(!accessToken){
-            return next(ApiError.UnauthorizedError([TOKEN_NOT_VALID]));
+            return next(ApiError.BadRequest("FORMAT_ERROR", {"token": "REQUIRED"}));
         }
 
         const userData = jwt.verify(accessToken, process.env.JWT_ACCESS_SECRET)
         if (!userData){
-            return next(ApiError.UnauthorizedError([TOKEN_NOT_VALID]));
+            return next(ApiError.BadRequest("FORMAT_ERROR", {"token": "REQUIRED"}));
         }
 
         const user: Users| null = await Users.findOne({where: {id: userData.id}});
         if(!user){
-            return next(ApiError.UnauthorizedError([TOKEN_NOT_VALID]));
+            return next(ApiError.BadRequest("FORMAT_ERROR", {"token": "REQUIRED"}));
         }
 
-        req.user = new UserDto(user);
         next();
     }catch (e){
-        return next(ApiError.UnauthorizedError([TOKEN_NOT_VALID]));
+        return next(ApiError.BadRequest("FORMAT_ERROR", {"token": "REQUIRED"}));
     }
 }

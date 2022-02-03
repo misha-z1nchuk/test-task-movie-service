@@ -1,9 +1,11 @@
 module.exports = class ApiError extends Error{
-    status: any;
-    errors: any;
+    status: number;
+    errors: {};
+    codeMessage: string;
 
-    constructor(status: any, message:string, errors = []) {
-        super(message);
+    constructor(status: number, codeMessage:string, errors = {}) {
+        super();
+        this.codeMessage = codeMessage;
         this.status = status;
         this.errors = errors;
     }
@@ -12,8 +14,16 @@ module.exports = class ApiError extends Error{
         return new ApiError(401, "User not authorized", error);
     }
 
-    static BadRequest(message: string, errors = []){
-        return new ApiError(400, message, errors);
+    static BadRequest(codeMessage: string, errors = {}){
+        return new ApiError(0, codeMessage, {fields: errors});
     }
 
+}
+
+export const AUTHENTICATION_FAILED ={
+    "fields": {
+        "email": "AUTHENTICATION_FAILED",
+        "password": "AUTHENTICATION_FAILED"
+    },
+    "code": "AUTHENTICATION_FAILED"
 }
