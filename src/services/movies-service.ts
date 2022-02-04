@@ -1,6 +1,6 @@
 import {Movies} from "../model/movies-model";
 import {Actors} from "../model/actors-model";
-import {Op} from "sequelize";
+import {Op, Sequelize} from "sequelize";
 
 const ApiError = require("../exeptions/api-error");
 const MovieDto = require('../dtos/movie-dto')
@@ -88,7 +88,7 @@ export class SessionService {
         order = order || "ASC"
         sort = sort || "id";
         offset = offset * limit - limit;
-        let movies: { rows: Movies[]; count: number } | Movies[];
+        let movies: { rows: Movies[]; count: number } | Movies[] = [];
 
         if (actor) {
             let result: Array<Actors> = await Actors.findAll({
@@ -99,16 +99,23 @@ export class SessionService {
                 }
             })
             let idArr = getMovieIdsFromActors(result)
-
-            movies = await Movies.findAll({
-                attributes: {exclude: ['actors']},
-                where: {id: {[Op.or]: idArr}},
-                order: [
-                    [`${sort}`, `${order}`],
-                ],
-                limit,
-                offset
-            })
+            if (idArr.length > 0){
+                movies = await Movies.findAll({
+                    attributes: {exclude: ['actors']},
+                    where: {id: {[Op.or]: idArr}},
+                    order: [
+                        [Sequelize.fn('lower', Sequelize.col(`${sort}`)), `${order}`],
+                    ],
+                    limit,
+                    offset
+                })
+            }
+            return {
+                movies: {
+                    "count": 0,
+                    "rows": []},
+                status: 1
+            }
 
         } else if (title) {
             movies = await Movies.findAndCountAll(
@@ -120,7 +127,7 @@ export class SessionService {
                         }
                     },
                     order: [
-                        [`${sort}`, `${order}`],
+                        [Sequelize.fn('lower', Sequelize.col(`${sort}`)), `${order}`],
                     ],
                     limit,
                     offset
@@ -155,21 +162,29 @@ export class SessionService {
                 foundedIdOfMovies.add(movie.id)
             })
             let resultIds = [...foundedIdOfMovies];
+            if(resultIds.length > 0){
+                movies = await Movies.findAndCountAll({
+                    attributes: {exclude: ['actors']},
+                    where: {id: {[Op.or]: resultIds}},
+                    order: [
+                        [Sequelize.fn('lower', Sequelize.col(`${sort}`)), `${order}`],
+                    ],
+                    limit,
+                    offset
+                });
+            }
+            return {
+                movies: {
+                    "count": 0,
+                    "rows": []},
+                status: 1
+            }
 
-            movies = await Movies.findAndCountAll({
-                attributes: {exclude: ['actors']},
-                where: {id: {[Op.or]: resultIds}},
-                order: [
-                    [`${sort}`, `${order}`],
-                ],
-                limit,
-                offset
-            });
         } else {
             movies = await Movies.findAndCountAll({
                 attributes: {exclude: ['actors']},
                 order: [
-                    [`${sort}`, `${order}`],
+                    [Sequelize.fn('lower', Sequelize.col(`${sort}`)), `${order}`],
                 ],
                 limit,
                 offset

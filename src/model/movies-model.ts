@@ -38,6 +38,9 @@ Movies.init(
     {
         sequelize: db,
         tableName: 'movies',
+        charset: 'utf8',
+        collate: 'utf8_unicode_ci',
+
     }
 )
 Movies.hasMany(Actors, {foreignKey: 'movieId'})
