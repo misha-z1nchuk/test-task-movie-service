@@ -10,7 +10,7 @@ class UserController{
         try {
             const errors: any = validationResult(req);
             if (!errors.isEmpty()) {
-                return next(ApiError.BadRequest("Validation error", errors))
+                return next(ApiError.ValidationError("Validation error", errors))
             }
 
             const {name, email, password, confirmPassword} = req.body;

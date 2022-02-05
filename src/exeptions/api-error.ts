@@ -18,6 +18,9 @@ module.exports = class ApiError extends Error{
         return new ApiError(0, codeMessage, {fields: errors});
     }
 
+    static ValidationError(codeMessage: string, errors : any){
+        return new ApiError(0, codeMessage, errors['errors']);
+    }
 }
 
 export const AUTHENTICATION_FAILED ={
