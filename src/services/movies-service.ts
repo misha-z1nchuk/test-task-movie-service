@@ -1,6 +1,7 @@
 import {Movies} from "../model/movies-model";
 import {Actors} from "../model/actors-model";
 import {Op, Sequelize} from "sequelize";
+import {getTitleAlphabeticSort} from "../utils/get-title-alphabetic-sort";
 
 const ApiError = require("../exeptions/api-error");
 const MovieDto = require('../dtos/movie-dto')
@@ -87,6 +88,12 @@ export class SessionService {
         limit = limit || 10;
         order = order || "ASC"
         sort = sort || "id";
+
+        let isAlphabetically = false;
+        if(sort == 'title'){
+            isAlphabetically = !isAlphabetically;
+        }
+
         offset = offset * limit - limit;
         let movies: { rows: Movies[]; count: number } | Movies[] = [];
 
@@ -109,6 +116,9 @@ export class SessionService {
                     limit,
                     offset
                 })
+                if (isAlphabetically){
+                    movies = await getTitleAlphabeticSort(movies, order);
+                }
             }
             return {
                 movies: {
@@ -132,6 +142,9 @@ export class SessionService {
                     limit,
                     offset
                 })
+            if (isAlphabetically){
+                movies = await getTitleAlphabeticSort(movies.rows, order);
+            }
         } else if (search) {
             let moviesSearch = await Movies.findAndCountAll(
                 {
@@ -172,6 +185,9 @@ export class SessionService {
                     limit,
                     offset
                 });
+                if (isAlphabetically){
+                    movies = await getTitleAlphabeticSort(movies.rows, order);
+                }
             }
             return {
                 movies: {
@@ -189,6 +205,9 @@ export class SessionService {
                 limit,
                 offset
             });
+            if (isAlphabetically){
+                movies = await getTitleAlphabeticSort(movies.rows, order);
+            }
         }
 
         return {

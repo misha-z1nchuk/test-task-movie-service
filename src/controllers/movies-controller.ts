@@ -57,6 +57,11 @@ export class SessionsController {
 
     async getAllMovies(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
         try {
+            const errors: any = validationResult(req);
+            if (!errors.isEmpty()) {
+                return next(ApiError.BadRequest("Validation error", errors))
+            }
+
             let {actor, title, search, sort, order, limit, offset} = req.query
             let result = await moviesService.getMovieList(actor, title, search, sort, order, Number(limit), Number(offset));
             return res.json(result);
