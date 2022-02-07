@@ -74,10 +74,10 @@ export class SessionsController {
         try {
             const {movies} = req.files
             if(!movies){
-                return next(ApiError.ValidationError("Validation error", {movies: "Movie file is not provided"}))
+                return next(ApiError.ValidationError("Validation error", {errors: {movies: "File is no provided"}}))
             }
             if(movies.name.split('.').pop() !== 'txt'){
-                return next(ApiError.ValidationError("Validation error", {movies: "Movie file extension is not valid"}))
+                return next(ApiError.ValidationError("Validation error", {errors: {movies: "File should be .txt"}}))
             }
             let buffer = movies.data;
             let result = await moviesService.import(buffer.toString('utf8'));

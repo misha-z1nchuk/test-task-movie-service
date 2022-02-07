@@ -83,9 +83,9 @@ export class SessionService {
 
     }
 
-    async getMovieList(actor: string, title: string, search: string, sort: string, order: string, limit: number, offset: number) {
+    async getMovieList(actor: string, title: string, search: string, sort: string, order: string, limit: any, offset: number) {
         offset = offset || 0;
-        limit = limit || 10;
+        limit = limit || null;
         order = order || "ASC"
         sort = sort || "id";
 
@@ -119,13 +119,15 @@ export class SessionService {
                 if (isAlphabetically){
                     movies = await getTitleAlphabeticSort(movies, order);
                 }
+            }else {
+                return {
+                    movies: {
+                        "count": 0,
+                        "rows": []},
+                    status: 1
+                }
             }
-            return {
-                movies: {
-                    "count": 0,
-                    "rows": []},
-                status: 1
-            }
+
 
         } else if (title) {
             movies = await Movies.findAndCountAll(
@@ -188,13 +190,15 @@ export class SessionService {
                 if (isAlphabetically){
                     movies = await getTitleAlphabeticSort(movies.rows, order);
                 }
+            }else{
+                return {
+                    movies: {
+                        "count": 0,
+                        "rows": []},
+                    status: 1
+                }
             }
-            return {
-                movies: {
-                    "count": 0,
-                    "rows": []},
-                status: 1
-            }
+
 
         } else {
             movies = await Movies.findAndCountAll({
